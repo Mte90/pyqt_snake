@@ -3,9 +3,9 @@ import sys, time
 import thread
 from random import randrange
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
-class Snake(QtGui.QWidget):
+class Snake(QtWidgets.QWidget):
 	def __init__(self):
 		super(Snake, self).__init__()
 		self.initUI()
@@ -130,7 +130,7 @@ class Snake(QtGui.QWidget):
 			self.score += 1
 			return True
 		elif self.score >= 573:
-			print "you win!"
+			print("you win!")
 
 		self.snakeArray.pop()
 
@@ -159,10 +159,10 @@ class Snake(QtGui.QWidget):
 			self.direction(self.lastKeyPress)
 			self.repaint()
 		else:
-			QtGui.QFrame.timerEvent(self, event)
+			QtWidgets.QFrame.timerEvent(self, event)
 
 def main():
-	app = QtGui.QApplication(sys.argv)
+	app = QtWidgets.QApplication(sys.argv)
 	ex = Snake()
 	sys.exit(app.exec_())
 	
