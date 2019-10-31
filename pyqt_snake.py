@@ -28,10 +28,17 @@ class Snake(QtWidgets.QWidget):
 		if self.isOver:
 			self.gameOver(event, qp)
 		qp.end()
+    
+	# execute the calculate every tick
+	def timerEvent(self, event):
+		if event.timerId() == self.timer.timerId():
+			self.direction(self.lastKeyPress)
+			self.repaint()
+		else:
+			QtWidgets.QFrame.timerEvent(self, event)
 
 	def keyPressEvent(self, e):
 		if not self.isPaused:
-			#print "inflection point: ", self.x, " ", self.y
 			if e.key() == QtCore.Qt.Key_Up and self.lastKeyPress != 'UP' and self.lastKeyPress != 'DOWN':
 				self.direction("UP")
 				self.lastKeyPress = 'UP'
@@ -78,49 +85,9 @@ class Snake(QtWidgets.QWidget):
 		self.timer.start(self.speed, self)
 		self.update()
 
-	def direction(self, dir):
-		if (dir == "DOWN" and self.checkStatus(self.x, self.y+12)):
-			self.y += 12
-			self.repaint()
-			self.snakeArray.insert(0 ,[self.x, self.y])
-		elif (dir == "UP" and self.checkStatus(self.x, self.y-12)):
-			self.y -= 12
-			self.repaint()
-			self.snakeArray.insert(0 ,[self.x, self.y])
-		elif (dir == "RIGHT" and self.checkStatus(self.x+12, self.y)):
-			self.x += 12
-			self.repaint()
-			self.snakeArray.insert(0 ,[self.x, self.y])
-		elif (dir == "LEFT" and self.checkStatus(self.x-12, self.y)):
-			self.x -= 12
-			self.repaint()
-			self.snakeArray.insert(0 ,[self.x, self.y])
-	def scoreBoard(self, qp):
-		qp.setPen(QtCore.Qt.NoPen)
-		qp.setBrush(QtGui.QColor(25, 80, 0, 160))
-		qp.drawRect(0, 0, 300, 24)
-
-	def scoreText(self, event, qp):
-		qp.setPen(QtGui.QColor(255, 255, 255))
-		qp.setFont(QtGui.QFont('Decorative', 10))
-		qp.drawText(8, 17, "SCORE: " + str(self.score))  
-		qp.drawText(195, 17, "HIGHSCORE: " + str(self.highscore))  
-
-	def gameOver(self, event, qp):
-		self.highscore = max(self.highscore, self.score)
-		qp.setPen(QtGui.QColor(0, 34, 3))
-		qp.setFont(QtGui.QFont('Decorative', 10))
-		qp.drawText(event.rect(), QtCore.Qt.AlignCenter, "GAME OVER")  
-		qp.setFont(QtGui.QFont('Decorative', 8))
-		qp.drawText(80, 170, "press space to play again")    
-
 	def checkStatus(self, x, y):
-		if y > 288 or x > 288 or x < 0 or y < 24:
-			self.pause()
-			self.isPaused = True
-			self.isOver = True
-			return False
-		elif self.snakeArray[0] in self.snakeArray[1:len(self.snakeArray)]:
+		pos = y > 288 or x > 288 or x < 0 or y < 24
+		if pos or (self.snakeArray[0] in self.snakeArray[1:len(self.snakeArray)]):
 			self.pause()
 			self.isPaused = True
 			self.isOver = True
@@ -129,12 +96,22 @@ class Snake(QtWidgets.QWidget):
 			self.FoodPlaced = False
 			self.score += 1
 			return True
-		elif self.score >= 573:
-			print("you win!")
 
 		self.snakeArray.pop()
-
 		return True
+
+	def direction(self, dir):
+		if (dir == "DOWN" and self.checkStatus(self.x, self.y+12)):
+			self.y += 12
+		elif (dir == "UP" and self.checkStatus(self.x, self.y-12)):
+			self.y -= 12
+		elif (dir == "RIGHT" and self.checkStatus(self.x+12, self.y)):
+			self.x += 12
+		elif (dir == "LEFT" and self.checkStatus(self.x-12, self.y)):
+			self.x -= 12
+
+		self.repaint()
+		self.snakeArray.insert(0 ,[self.x, self.y])
 
 	#places the food when theres none on the board 
 	def placeFood(self, qp):
@@ -153,13 +130,24 @@ class Snake(QtWidgets.QWidget):
 		for i in self.snakeArray:
 			qp.drawRect(i[0], i[1], 12, 12)
 
-	#game thread
-	def timerEvent(self, event):
-		if event.timerId() == self.timer.timerId():
-			self.direction(self.lastKeyPress)
-			self.repaint()
-		else:
-			QtWidgets.QFrame.timerEvent(self, event)
+	def scoreBoard(self, qp):
+		qp.setPen(QtCore.Qt.NoPen)
+		qp.setBrush(QtGui.QColor(25, 80, 0, 160))
+		qp.drawRect(0, 0, 300, 24)
+
+	def scoreText(self, event, qp):
+		qp.setPen(QtGui.QColor(255, 255, 255))
+		qp.setFont(QtGui.QFont('Decorative', 10))
+		qp.drawText(8, 17, "SCORE: " + str(self.score))  
+		qp.drawText(200, 17, "HIGHSCORE: " + str(self.highscore))  
+
+	def gameOver(self, event, qp):
+		self.highscore = max(self.highscore, self.score)
+		qp.setPen(QtGui.QColor(0, 34, 3))
+		qp.setFont(QtGui.QFont('Decorative', 10))
+		qp.drawText(event.rect(), QtCore.Qt.AlignCenter, "GAME OVER")  
+		qp.setFont(QtGui.QFont('Decorative', 8))
+		qp.drawText(90, 170, "press space to play again")    
 
 def main():
 	app = QtWidgets.QApplication(sys.argv)
