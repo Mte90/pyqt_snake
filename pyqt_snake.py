@@ -1,8 +1,6 @@
 #!/usr/bin/python
-import sys, time
-import thread
+import sys
 from random import randrange
-
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 class Snake(QtWidgets.QWidget):
@@ -13,7 +11,7 @@ class Snake(QtWidgets.QWidget):
 	def initUI(self):
 		self.highscore = 0
 		self.newGame()
-		self.setStyleSheet("QWidget { background: #A9F5D0 }") 
+		self.setStyleSheet("QWidget { background: #A9F5D0 }")
 		self.setFixedSize(300, 300)
 		self.setWindowTitle('Snake')
 		self.show()
@@ -28,7 +26,7 @@ class Snake(QtWidgets.QWidget):
 		if self.isOver:
 			self.gameOver(event, qp)
 		qp.end()
-    
+
 	# execute the calculate every tick
 	def timerEvent(self, event):
 		if event.timerId() == self.timer.timerId():
@@ -113,7 +111,7 @@ class Snake(QtWidgets.QWidget):
 		self.repaint()
 		self.snakeArray.insert(0 ,[self.x, self.y])
 
-	#places the food when theres none on the board 
+	#places the food when theres none on the board
 	def placeFood(self, qp):
 		if self.FoodPlaced == False:
 			self.foodx = randrange(24)*12
@@ -138,22 +136,22 @@ class Snake(QtWidgets.QWidget):
 	def scoreText(self, event, qp):
 		qp.setPen(QtGui.QColor(255, 255, 255))
 		qp.setFont(QtGui.QFont('Decorative', 10))
-		qp.drawText(8, 17, "SCORE: " + str(self.score))  
-		qp.drawText(200, 17, "HIGHSCORE: " + str(self.highscore))  
+		qp.drawText(8, 17, "SCORE: " + str(self.score))
+		qp.drawText(200, 17, "HIGHSCORE: " + str(self.highscore))
 
 	def gameOver(self, event, qp):
 		self.highscore = max(self.highscore, self.score)
 		qp.setPen(QtGui.QColor(0, 34, 3))
 		qp.setFont(QtGui.QFont('Decorative', 10))
-		qp.drawText(event.rect(), QtCore.Qt.AlignCenter, "GAME OVER")  
+		qp.drawText(event.rect(), QtCore.Qt.AlignCenter, "GAME OVER")
 		qp.setFont(QtGui.QFont('Decorative', 8))
-		qp.drawText(90, 170, "press space to play again")    
+		qp.drawText(90, 170, "press space to play again")
 
 def main():
 	app = QtWidgets.QApplication(sys.argv)
 	ex = Snake()
 	sys.exit(app.exec_())
-	
+
 
 if __name__ == '__main__':
 	main()
