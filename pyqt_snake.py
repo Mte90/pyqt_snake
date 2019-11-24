@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import sys
 from random import randrange
 from PyQt5 import QtWidgets, QtCore, QtGui
